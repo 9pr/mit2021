@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>Reveal.js - Master Plugin Example</title>
+        
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+        
+        <link rel="stylesheet" href="http://lab.hakim.se/reveal-js/css/reveal.css">
+        <link rel="stylesheet" href="http://lab.hakim.se/reveal-js/css/theme/white.css" id="theme">
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section header="false" footer="false" count="false">
+                	Title Slide
+                </section>
+                <section>
+                    Slide with header and footer.
+                </section>
+                <section footer="false" count="false">
+                    Uncounted slide with header only.
+                </section>
+                <section>
+                    Another slide with header and footer.
+                </section>
+                <section header="false">
+                    Counted slide without header.
+                </section>
+                <section header="false" footer="false" count="false">
+                    Questions?
+                </section>
+            </div>
+        </div>
+        
+        <script src="http://lab.hakim.se/reveal-js/lib/js/head.min.js"></script>
+        <script src="http://lab.hakim.se/reveal-js/js/reveal.js"></script>
+
+        <script>
+            Reveal.initialize({
+                master: {
+                    header: {
+                        size:  '60%',
+                        left:  'Great Presentation',
+                        right: '<img src="image.png" height="100px" />',
+                    },
+
+                    footer: {
+                        size:   '60%',
+                        left:   'John Doe',
+                        center: 'Fancy Something',
+                        right:  '#{slideNumber} / #{slideCount}'
+                    }
+                },
+
+                controls: false,
+                dependencies: [
+                    { src: 'http://lab.hakim.se/reveal-js/lib/js/classList.js' },
+                    { src: 'master.js', async: true }
+                ]
+            });
+        </script>
+    </body>
+</html>
