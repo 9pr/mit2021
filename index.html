@@ -265,14 +265,16 @@
 					</script>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
-					<script type="text/template">
-						### Перевод величин
-						
-						
-						Note:
-
-					</script>
+				<section>
+					<h3>Конвертер величин</h3>
+					<input type="text" name="" id="converter_value" 
+						placeholder="Градусы или радианы">
+					<select id="converter_type">
+						<option value="radian">Радиан</option>
+						<option value="degree">Градус</option>
+					</select>
+					<input type="button" id="converter_button" value="Конвертировать">
+					<output id="converter_out"></output>
 				</section>
 
 				<section data-markdown  data-separator-notes="^Note:">
@@ -308,15 +310,9 @@
 					</script>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
-					<script type="text/template">
-						### Таблица тригонометрических функций
-
-
-						
-						Note:
-
-					</script>
+				<section>
+					<h3>Таблица тригонометрических функций</h3>
+					<output id="table"></output>
 				</section>
 
 				<section data-markdown  data-separator-notes="^Note:">
@@ -355,6 +351,43 @@
 						Note:
 
 					</script>
+				</section>
+
+				<section>
+					<h3>Игра 1. Города классические</h3>
+					<input type="button" value="Начать игру" id="game1_start">
+					<label for="game1_town">Ваш город:</label>
+					<input type="text" id="game1_town" >
+					<input type="button" id="game1_set_result" value="Отправить город">
+					<output id="game1_town2"></output>
+				</section>
+
+				<section>
+					<h3>Игра 2. Города на расстояние</h3>
+					<input type="button" value="Начать игру" id="game2_start">
+					<label for="game2_town">Ваш город:</label>
+					<input type="text" id="game2_town" >
+					<input type="button" id="game2_set_result" value="Отправить город">
+					<output id="game2_town2"></output>
+					<div>
+						<span>Счет: </span>
+						<span id="game2_score"></span>
+					</div>
+				</section>
+
+				<section>
+					<h3>Игра 3. Города на расстояние. Многопользовательская</h3>
+					<label for="game3_name"></label>
+					<input type="text" id="game3_name">
+					<input type="button" value="Начать игру" id="game3_start">
+					<label for="game3_town">Ваш город:</label>
+					<input type="text" id="game3_town" >
+					<input type="button" id="game3_set_result" value="Отправить город">
+					<output id="game3_town2"></output>
+					<div>
+						<span>Счет: </span>
+						<span id="game3_score"></span>
+					</div>
 				</section>
 
 				<section data-markdown  data-separator-notes="^Note:">
@@ -399,6 +432,10 @@
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+
+		<script src="js/algebrite.bundle-for-browser.js"></script>
+		<script src="js/math.js"></script>
+
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
@@ -406,8 +443,29 @@
 			Reveal.initialize({
 				hash: true,
 
+				center: false,
+
+				slideNumber: true,
+
+				controls: true, 
+
+				dependencies: [
+					{
+						src: 'plugin/menu/menu.js'
+					},
+					{
+						src: 'plugin/katex/katex.js',
+						async: true,
+					}
+				],
+
+				menu : {
+					numbers: true,
+					markers: true, 
+				},
+
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes]
 			});
 		</script>
 	</body>
