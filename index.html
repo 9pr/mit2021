@@ -8,16 +8,22 @@
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
+		<link rel="stylesheet" href="dist/theme/sky.css" id="theme">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+
+		<style>
+			input, select {
+				font-size: 25px;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						География и геометрия
 						=========================
@@ -27,7 +33,7 @@
 					</script>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Определения
 						-----------
@@ -39,7 +45,7 @@
 					<script type="text/template">
 						### География
 
-						География (от др.греч землеописание) - комплекс естественных 
+						География (от др.греч Γεωγραφια землеописание) - комплекс естественных 
 						и общественных наук, изучающих структуру, функционирование и 
 						эволюцию географической оболочки, взаимодействие и распределение
 						в пространстве природных и природно-общественных геосистем и их
@@ -67,7 +73,9 @@
 					<script type="text/template">
 						### Геометрия
 
-						Геометрия (от др.греч. землемерие) - 
+						Геометрия (от др.греч. 
+						&Gamma;&epsilon;&omega;&mu;&epsilon;&tau;&rho;&iota;&alpha;
+						землемерие) - 
 						раздел математики, изучающий пространственные
 						структуры и отношенияя, а так же их обобщения.
 
@@ -76,7 +84,7 @@
 					</script>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Координаты
 						-----------
@@ -117,8 +125,8 @@
 					<script type="text/template">
 						### Широта
 
-						Широта - угол фи между местным направлением зенита
-						и плоскостью экватора, отчитываемый от 0 до 90 градусов
+						Широта - угол $\phi$ между местным направлением зенита
+						и плоскостью экватора, отчитываемый от $0^\circ$ до $90^\circ$
 						в обе стороны от экватора. Географическую широту точек
 						лежащих в северном полушарии, принято считать положительной,
 						широту в южном полушарии отрицательной. 
@@ -161,10 +169,10 @@
 					<script type="text/template">
 						### Долгота
 
-						Долгота - это двугранный угол лямбда между 
+						Долгота - это двугранный угол $\lambda$ между 
 						плоскостью меридиана, проходящего через данную точку,
 						и плоскостью начального нулевого меридиана, от которого
-						ведется отсчет долготы. Долготу от 0 до 180 градусов к
+						ведется отсчет долготы. Долготу от $0^\circ$ до $180^\circ$ к
 						востоку от нулевого меридиана называют восточной, к западу -
 						западной. Восточные долготы принято считать положительными,
 						западные - отрицательными.
@@ -192,8 +200,8 @@
 					<script type="text/template">
 						### Формы записи географических координат
 
-						Координаты (широта от -90 до 90 градусов,
-						долгота от -180 до 180 градусов) могут
+						Координаты (широта от $-90^\circ$ до $90^\circ$,
+						долгота от $-180^\circ$ до $180^\circ$) могут
 						записываться:
 
 						
@@ -224,14 +232,20 @@
 						### Формы записи географических координат
 
 						Форматы можно пересчитать по формуле:
-						1 градус = 60 минут, 1 минута = 60 секундам.
+						$1^\circ$ = $60'$, $1'$ = $60''$.
 						
+						Примеры:  
+						$55,755831^\circ$  $37,617613^\circ$  
+						$N55,755831^\circ$  $E37,617613^\circ$  
+						$55^\circ45.35'$  $37^\circ37.06'$    
+						$55^\circ45'20.9916''N$  $37^\circ37'3.6228''E$    
+
 						Note:
 
 					</script>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Величины
 						-----------
@@ -243,7 +257,7 @@
 					<script type="text/template">
 						### Радиан
 
-						Радиан (от лат. луч) - угол соответствующий дуге,
+						Радиан (от лат. radius луч) - угол соответствующий дуге,
 						длина которой равна её радиусу. Единица измерения
 						плоских углов в международной системе единиц (СИ)
 						
@@ -257,9 +271,25 @@
 						### Градус
 
 						Градус (от лат. шаг, ступень) - обозначается. 
-						Один полный оборот соответствует углу в 360 градусов.
-						В прямом угле 90 градусов. В развернутом 180 градусов.
+						Один полный оборот соответствует углу в $360^\circ$.
+						В прямом угле $90^\circ$. В развернутом $180^\circ$.
 						
+						Note:
+
+					</script>
+				</section>
+
+				<section data-markdown  data-separator-notes="^Note:">
+					<script type="text/template">
+						### Перевод величин
+
+						$$
+							\alpha^\circ = \alpha_\text{рад}\tfrac{180^\circ}{\pi}
+						$$
+
+						$$
+							\alpha_\text{рад} = \tfrac{\pi}{180^\circ} \alpha_\text{рад}
+						$$
 						Note:
 
 					</script>
@@ -277,7 +307,7 @@
 					<output id="converter_out"></output>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Тригонометрия
 						-----------
@@ -303,7 +333,22 @@
 					<script type="text/template">
 						### Тригонометрические функции
 
-						
+						$$
+						\sin \alpha = \tfrac{y_b}{R}
+						$$
+						$$
+						\cos \alpha = \tfrac{x_b}{R}
+						$$
+						$$
+						\tan \alpha = 
+							\tfrac{\sin \alpha}{\cos \alpha} =
+							\tfrac{y_b}{x_b}
+						$$
+						$$
+						\cot \alpha = 
+							\tfrac{\cos \alpha}{\sin \alpha} =
+							\tfrac{x_b}{y_b}
+						$$
 						
 						Note:
 
@@ -319,7 +364,9 @@
 					<script type="text/template">
 						### Ортодромия
 		
-						Ортодромия (от греч. прямой путь) в геометрии -
+						Ортодромия (от греч. 
+						$O\rho\theta\omicron\delta\rho\omicron\mu\omicron\varsigma$
+						 прямой путь) в геометрии -
 						кратчайшая линия между двумя точками на поверхности вращения.
 						
 						В картографии и навигации ортодромия - кратчайшее расстояние
@@ -336,13 +383,50 @@
 					<script type="text/template">
 						### Рассчет ортодромии
 
-						
+						Длина ортодромии равна $D = l \cdot \delta $, где
+						$$
+							\delta = \arccos(
+								\sin \phi_1 \cdot \sin \phi_2 +
+								\cos \phi_1 \cdot \cos \phi_2 \cdot
+								\cos(\lambda_2 - \lambda_1)
+							)
+						$$
+
+						$\phi_1$ = широта начальной точки в градусах  
+						$\phi_2$ = широта конечной точки в градусах  
+						$\lambda_1$ = долгота начальной точки в градусах  
+						$\lambda_2$ = долгота конечной точки в градусах  
+						$l$ = длина дуги меридиана небесного тела
 						Note:
 
 					</script>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section>
+					<h3>Рассчет ортодромии</h3>
+					<div>
+						<label>Широта А
+							<input type="text" id="latA">
+						</label>
+						<label>Долгота А
+							<input type="text" id="lonA">
+						</label>
+					</div>
+					<div>
+						<label>Широта B
+							<input type="text" id="latB">
+						</label>
+						<label>Долгота B
+							<input type="text" id="lonB">
+						</label>
+					</div>
+					<div>
+						<input id="ortodroma" type="button" value="Посчитать">
+					</div>
+					<output id="ortodroma_out"></output>
+				</section>
+
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Игры
 						----
@@ -390,7 +474,7 @@
 					</div>
 				</section>
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Веселые картинки
 						----
@@ -417,7 +501,7 @@
 				
 				
 
-				<section data-markdown  data-separator-notes="^Note:">
+				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Спасибо за внимание
 					</script>
