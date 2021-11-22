@@ -9,7 +9,8 @@
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/sky.css" id="theme">
-
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+		
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
 
@@ -329,6 +330,11 @@
 					</script>
 				</section>
 
+				<section>
+					<h3>Тригонометрический круг</h3>
+					<div id="plot" style="height: 400px; margin-left:25%;"></div>
+				</section>
+
 				<section data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						### Тригонометрические функции
@@ -340,12 +346,12 @@
 						\cos \alpha = \tfrac{x_b}{R}
 						$$
 						$$
-						\tan \alpha = 
+						\tg \alpha = 
 							\tfrac{\sin \alpha}{\cos \alpha} =
 							\tfrac{y_b}{x_b}
 						$$
 						$$
-						\cot \alpha = 
+						\ctg \alpha = 
 							\tfrac{\cos \alpha}{\sin \alpha} =
 							\tfrac{x_b}{y_b}
 						$$
@@ -384,13 +390,13 @@
 						### Рассчет ортодромии
 
 						Длина ортодромии равна $D = l \cdot \delta $, где
-						$$
+						$
 							\delta = \arccos(
 								\sin \phi_1 \cdot \sin \phi_2 +
 								\cos \phi_1 \cdot \cos \phi_2 \cdot
 								\cos(\lambda_2 - \lambda_1)
 							)
-						$$
+						$
 
 						$\phi_1$ = широта начальной точки в градусах  
 						$\phi_2$ = широта конечной точки в градусах  
@@ -407,7 +413,7 @@
 					<div>
 						<label>Широта А
 							<input type="text" id="latA">
-						</label>
+						</label> <br>
 						<label>Долгота А
 							<input type="text" id="lonA">
 						</label>
@@ -415,7 +421,7 @@
 					<div>
 						<label>Широта B
 							<input type="text" id="latB">
-						</label>
+						</label> <br>
 						<label>Долгота B
 							<input type="text" id="lonB">
 						</label>
@@ -516,9 +522,13 @@
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
 
 		<script src="js/algebrite.bundle-for-browser.js"></script>
 		<script src="js/math.js"></script>
+		<script src="js/plotly-2.6.3.min.js"></script>
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+		<script src="http://city.9pr.ru/socket.io/socket.io.js"></script>
 
 		<script>
 			// More info about initialization & config:
@@ -537,10 +547,6 @@
 					{
 						src: 'plugin/menu/menu.js'
 					},
-					{
-						src: 'plugin/katex/katex.js',
-						async: true,
-					}
 				],
 
 				menu : {
@@ -549,8 +555,162 @@
 				},
 
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
 			});
+		</script>
+		<script>
+			window.onload = () => {
+
+				//Рисуем круг
+				let layout = {
+					title: 'Тригонометрический круг',
+					xaxis: {
+						range: [-1.5, 1.5],
+					},
+					yaxis: {
+						range: [-1.5, 1.5],
+					},
+					width: 500,
+					height: 500,
+					shapes: [
+						{
+							type: 'circle',
+							xref: 'x',
+							yref: 'y',
+							x0: -1,
+							y0: -1,
+							x1: 1,
+							y1: 1,
+							line: {
+								color: 'rgba(50, 171, 96, 1)',
+							},
+						},
+						{
+							type: 'line',
+							x0: 0,
+							y0: 0,
+							x1: Math.sqrt(.51),
+							y1: .7,
+							line: {
+								color: 'blue',
+								width: 2.5,
+							},
+						},
+						{
+							type: 'line',
+							x0: 0,
+							y0: .7,
+							x1: Math.sqrt(.51),
+							y1: .7,
+							line: {
+								color: 'red',
+								width: 2.5,
+							},
+						},
+						{
+							type: 'line',
+							x0: Math.sqrt(.51),
+							y0: 0,
+							x1: Math.sqrt(.51),
+							y1: .7,
+							line: {
+								color: 'red',
+								width: 2.5,
+							},
+						},
+					],
+					annotations: [
+						{
+							x: 0,
+							y: .7,
+							xref: 'x',
+							yref: 'y',
+							text: 'Yb',
+							arrowhead:7, 
+							showarrow: true,
+							ay: 0,
+							ax: -20,
+						},
+						{
+							x: Math.sqrt(.51),
+							y: 0,
+							xref: 'x',
+							yref: 'y',
+							text: 'Xb',
+							arrowhead:7, 
+							showarrow: true,
+							ay: 20,
+							ax: 0,
+						},
+						{
+							x:  Math.sqrt(.51),
+							y: .7,
+							text: 'B',
+						},
+						{
+							x: -.1,
+							y: -.1,
+							text: '0',
+							ax: 0,
+							ay: 0,
+						},
+					],
+				};
+				Plotly.newPlot('plot', [], layout);
+
+				//Рассчет ортодромы
+				document.querySelector('#ortodroma').onclick = (e) => {
+					let latA = document.querySelector('#latA').value;
+					let latB = document.querySelector('#latB').value;
+					let lonA = document.querySelector('#lonA').value;
+					let lonB = document.querySelector('#lonB').value;
+					if (latA === '' || latB === '' || lonA === '' || lonB === '') {
+						alert('Не все поля заполнены');
+					}
+					if (
+						+latA < -90 || +latA > 90 ||
+						+latB < -90 || +latB > 90 ||
+						+lonA < -180 || +lonA > 180 ||
+						+lonB < -180 || +lonB > 180
+					) {
+						alert('Неверное значение одного из полей');
+					}
+					let result = ortodroma(+latA, +lonA, +latB, +lonB);
+					document.querySelector('#ortodroma_out').innerHTML = result;
+				}
+
+				// Конвертер величин
+				document.querySelector('#converter_button').onclick = () => {
+					let converterValue = document.querySelector('#converter_value');
+					let converterType = document.querySelector('#converter_type');
+					let converterOut = document.querySelector('#converter_out');
+					if (converterValue.value === '') {
+						alert('Поле не заполнено');
+					}
+					let currentType = +converterType.options.selectedIndex;
+					if (currentType === 0) {
+						result = katex.renderToString( 
+							math.evaluate('180 * ' + converterValue.value + '/ pi') + 
+							'^{\\circ}');
+					} else if (currentType === 1) {
+						result = katex.renderToString( math.simplify(converterValue.value + 
+						' * pi / 180').toTex());
+					}
+					converterOut.innerHTML = result;
+				}
+			}
+
+			function ortodroma (latA, lonA, latB, lonB) {
+				return 6372795 * Math.acos (
+					Math.cos(deg2rad(latB)) * Math.cos(deg2rad(latA)) *
+					Math.cos(deg2rad(lonA) - deg2rad(lonB)) + 
+					Math.sin(deg2rad(latB)) * Math.sin(deg2rad(latA))
+				);
+			}
+
+			function deg2rad (degree) {
+				return Math.PI * degree / 180;
+			}
 		</script>
 	</body>
 </html>
