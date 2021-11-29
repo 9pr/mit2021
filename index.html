@@ -18,6 +18,15 @@
 			input, select {
 				font-size: 25px;
 			}
+			#table {
+				font-size: 70%;
+			}
+			.hide {
+				display: none;
+			}
+			.map {
+				height: 350px;
+			}
 		</style>
 	</head>
 	<body>
@@ -445,24 +454,34 @@
 
 				<section>
 					<h3>Игра 1. Города классические</h3>
-					<input type="button" value="Начать игру" id="game1_start">
-					<label for="game1_town">Ваш город:</label>
-					<input type="text" id="game1_town" >
-					<input type="button" id="game1_set_result" value="Отправить город">
-					<output id="game1_town2"></output>
+					<div id="game1_button_start" class="show">
+						<input type="button" value="Начать игру" id="game1_start">
+					</div>
+					<div id="game1_area" class="hide">
+						<label for="game1_town">Ваш город:</label>
+						<input type="text" id="game1_town" >
+						<input type="button" id="game1_set_result" value="Отправить город">
+						<output id="game1_town2"></output>
+					</div>
+					<div class="map" id="game1_map"></div>
 				</section>
 
 				<section>
 					<h3>Игра 2. Города на расстояние</h3>
-					<input type="button" value="Начать игру" id="game2_start">
-					<label for="game2_town">Ваш город:</label>
-					<input type="text" id="game2_town" >
-					<input type="button" id="game2_set_result" value="Отправить город">
-					<output id="game2_town2"></output>
-					<div>
+					<div id="game2_button_start" class="show">
+						<input type="button" value="Начать игру" id="game2_start">
+					</div>
+					<div id="game2_area" class="hide">
+						<label for="game2_town">Ваш город:</label>
+						<input type="text" id="game2_town" >
+						<input type="button" id="game2_set_result" value="Отправить город">
+						<output id="game2_town2"></output>
+					</div>
+					<div id="game2_score" class="hide">
 						<span>Счет: </span>
 						<span id="game2_score"></span>
 					</div>
+					<div class="map" id="game2_map"></div>
 				</section>
 
 				<section>
@@ -698,6 +717,36 @@
 					}
 					converterOut.innerHTML = result;
 				}
+
+				//Таблица тригонометрических функций
+				let values = ['0', 'pi/6', 'pi/4', 'pi/3', 'pi/2', 
+					'pi', '3pi/2', '2pi',	
+				];
+				let functions = ['sin', 'cos', 'tan'];
+				trigonometry(values, functions);
+
+				// Игра 1
+				document.querySelector('#game1_start').onclick = () => {
+					document.querySelector('#game1_start').style.display = 'none';
+					document.querySelector('#game1_area').style.display = 'block';
+					map_game1 = L.map('game1_map').setView([51.478, 0, 0], 13);
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+					.addTo(map_game1);
+				}
+				const game1Set = new Set();
+				document.querySelector('#game1_set_result').onclick = async () => {
+					let town = document.querySelector('#game1_town').value;
+					if (game1Set.has(town)) {
+						alert('Данный город уже был');
+					} else {
+						game1Set.add(town);
+						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						let text = await response.text();
+						text = JSON.parse(text);
+						console.log(text);
+					}
+					console.log(town);
+				}
 			}
 
 			function ortodroma (latA, lonA, latB, lonB) {
@@ -710,6 +759,26 @@
 
 			function deg2rad (degree) {
 				return Math.PI * degree / 180;
+			}
+
+			function trigonometry(values, functions) {
+				let table = '<table><thead>';
+					table += '<tr><td>Радианы</td>';
+					for (let value of values) {
+						table += `<td>${katex.renderToString(
+							Algebrite.simplify(value).toLatexString())}</td>`;
+					}
+					table += '</tr><thead><tbody>';
+					for (let func of functions) {
+						table += `<tr><td>${func}${
+							katex.renderToString('\\alpha')}</td>`;
+							for (value of values) {
+								table += `<td>${katex.renderToString(Algebrite.simplify(
+									func+'('+value+')').toLatexString())}</td>`;
+							}
+					}
+				table += '</tbody></table>';
+				document.querySelector('#table').innerHTML = table;
 			}
 		</script>
 	</body>
