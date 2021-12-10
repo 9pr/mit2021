@@ -486,17 +486,24 @@
 
 				<section>
 					<h3>Игра 3. Города на расстояние. Многопользовательская</h3>
-					<label for="game3_name"></label>
-					<input type="text" id="game3_name">
-					<input type="button" value="Начать игру" id="game3_start">
-					<label for="game3_town">Ваш город:</label>
-					<input type="text" id="game3_town" >
-					<input type="button" id="game3_set_result" value="Отправить город">
-					<output id="game3_town2"></output>
-					<div>
+					<div id="game3_button_start" class="show">
+						<label for="game3_name"></label>
+						<input type="text" id="game3_name" value="Fox">
+						<input type="button" value="Начать игру" id="game3_start">
+					</div>
+					<div id="game3_waiting">
+					</div>
+					<div id="game3_area" class="hide">
+						<label for="game3_town">Ваш город:</label>
+						<input type="text" id="game3_town" >
+						<input type="button" id="game3_set_result" value="Отправить город">
+						<output id="game3_town2"></output>
+					</div>
+					<div id="game3_score" class="hide">
 						<span>Счет: </span>
 						<span id="game3_score"></span>
 					</div>
+					<div class="map" id="game3_map"></div>
 				</section>
 
 				<section class="center" data-markdown  data-separator-notes="^Note:">
@@ -578,6 +585,26 @@
 			});
 		</script>
 		<script>
+			let markersLayer;
+			let markersLayer2;
+			let markers;
+			let markers2;
+			let score2 = [];
+			let lastCoord2 = [];
+
+			let markers3 = [];
+			let markersCopy = [];
+			let markersLayer3;
+			let score3 = [0,0];
+			let lastCoord3 = [];
+			let name;
+			let opponent;
+			let whoGo;
+			let room;
+			let socket;
+			let game3Set;
+
+
 			window.onload = () => {
 
 				//Рисуем круг
@@ -744,9 +771,312 @@
 						let text = await response.text();
 						text = JSON.parse(text);
 						console.log(text);
+						if (text.error === undefined || text.error === null) {
+							if (text.no === undefined) {
+								let lastletter = lastLetter(town);
+								if (markersLayer !== undefined) {
+									markersLayer.clearLayers();
+								}
+								markers = [];
+								markers.push(
+									L.marker([text.latitude, text.longitude]).
+									bindPopup(text.city)
+								);
+								response = await fetch(`http://city.9pr.ru/lastletter/${lastletter}`);
+								text = await response.text();
+								text = JSON.parse(text);
+								if (text.error === undefined || text.error === null) {
+									console.log(text);
+									game1Set.add(text.city);
+									markers.push(
+										L.marker([text.latitude, text.longitude]).
+										bindPopup(text.city)
+									);
+									document.querySelector('#game1_town2').innerHTML = `
+										<div>Ваш город: ${town}. <br> Город противника
+											${text.city}</div>
+									`;
+									document.querySelector('label[for="game1_town"]').textContent = `
+											Ваш город на ${lastLetter(text.city).toUpperCase()}:
+									`;
+									document.querySelector('#game1_town').value = 
+									lastLetter(text.city).toUpperCase();
+									markersLayer = L.featureGroup(markers).addTo(map_game1);
+									map_game1.fitBounds(markersLayer.getBounds());
+								} else {
+									document.querySelector('#game1_town1').innerHTML =
+									'Произошла ошибка, игра окончена.';
+									console.log('Ошибка: ', text.error);
+								}
+							} else {
+								alert('Такого города не существует');
+							}
+						} else {
+							document.querySelector('#game1_town1').innerHTML =
+							'Произошла ошибка, игра окончена.';
+							console.log('Ошибка: ', text.error);
+						}
 					}
 					console.log(town);
 				}
+
+				// Игра 2
+				document.querySelector('#game2_start').onclick = () => {
+					document.querySelector('#game2_start').style.display = 'none';
+					document.querySelector('#game2_area').style.display = 'block';
+					document.querySelector('#game2_score').style.display = 'block';
+					document.querySelector('#game2_score').innerHTML = 'Игрок 0 : 0 Компьютер';
+					map_game2 = L.map('game2_map').setView([51.478, 0, 0], 13);
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+					.addTo(map_game2);
+					score2 = [0, 0];
+				}
+				const game2Set = new Set();
+				document.querySelector('#game2_set_result').onclick = async () => {
+					let town = document.querySelector('#game2_town').value;
+					if (game2Set.has(town)) {
+						alert('Данный город уже был');
+					} else {
+						game2Set.add(town);
+						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						let text = await response.text();
+						text = JSON.parse(text);
+						console.log(text);
+						if (text.error === undefined || text.error === null) {
+							if (text.no === undefined) {
+								let lastletter = lastLetter(town);
+								if (markersLayer2 !== undefined) {
+									markersLayer2.clearLayers();
+								}
+								markers2 = [];
+								if (lastCoord2.length === 2) {
+									score2[0] += Math.floor(
+										ortodroma(
+											text.latitude, text.longitude,
+											lastCoord2[0], lastCoord2[1]
+										)
+									);
+								}
+								lastCoord2 = [text.latitude, text.longitude];
+								markers2.push(
+									L.marker([text.latitude, text.longitude]).
+									bindPopup(text.city)
+								);
+								response = await fetch(`http://city.9pr.ru/lastletter/${lastletter}`);
+								text = await response.text();
+								text = JSON.parse(text);
+								if (text.error === undefined || text.error === null) {
+									console.log(text);
+									game2Set.add(text.city);
+									if (lastCoord2.length === 2) {
+										score2[1] += Math.floor(
+											ortodroma(
+												text.latitude, text.longitude,
+												lastCoord2[0], lastCoord2[1]
+											)
+										);
+									}
+									lastCoord2 = [text.latitude, text.longitude];
+								
+									markers2.push(
+										L.marker([text.latitude, text.longitude]).
+										bindPopup(text.city)
+									);
+									document.querySelector('#game2_town2').innerHTML = `
+										<div>Ваш город: ${town}. <br> Город противника
+											${text.city}</div>
+									`;
+									document.querySelector('label[for="game2_town"]').textContent = `
+											Ваш город на ${lastLetter(text.city).toUpperCase()}:
+									`;
+									document.querySelector('#game2_town').value = 
+									lastLetter(text.city).toUpperCase();
+									markersLayer2 = L.featureGroup(markers2).addTo(map_game2);
+									map_game2.fitBounds(markersLayer2.getBounds());
+									document.querySelector('#game2_score').innerHTML =
+									score2[0] >= score2[1] ?
+									`<b>Игрок</b> ${score2[0]-score2[1]} : 0 Компьютер` :
+									`Игрок 0 : ${score2[1]-score2[0]} Компьютер`
+								} else {
+									document.querySelector('#game2_town2').innerHTML =
+									'Произошла ошибка, игра окончена.';
+									console.log('Ошибка: ', text.error);
+								}
+							} else {
+								alert('Такого города не существует');
+							}
+						} else {
+							document.querySelector('#game2_town2').innerHTML =
+							'Произошла ошибка, игра окончена.';
+							console.log('Ошибка: ', text.error);
+						}
+					}
+					console.log(town);
+				}
+
+				//3игра
+				game3Set = new Set();
+				document.querySelector('#game3_start').onclick = () => {
+					if (typeof io !== 'undefined') {
+						socket = io("http://city.9pr.ru");
+						socket.on("connect", () => {
+							socket.on('wait', (body) => {
+								room = body.room;
+								Object.keys(body.gamers).forEach(gamePlayer => {
+									if (name !== gamePlayer) {
+										opponent = gamePlayer;
+										whoGo = body.gamers[gamePlayer][1];
+										document.querySelector('#game3_waiting').innerHTML = `К игре присоеденился: ${gamePlayer}. Ожидайте начала игры.`;
+										setTimeout(() => {
+											document.querySelector('#game3_button_start').style.display = 'none';
+											document.querySelector('#game3_area').style.display = 'none';
+											document.querySelector('#game3_waiting').style.display = 'none';
+											document.querySelector('#game3_score').style.display = 'block';
+											document.querySelector('#game3_score').innerHTML = `"${name}" 0 : 0 "${opponent}"`;
+											map_game3 = L.map('game3_map').setView([51.478, 0, 0], 13);
+											L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map_game3);
+											score3 = [0,0];
+											if (whoGo == 1) {
+												document.querySelector('#game3_waiting').style.display = 'block';
+												document.querySelector('#game3_waiting').innerHTML = 'Подождите, пока Ваш оппонент сделает ход.';
+											} else {
+												document.querySelector('#game3_area').style.display = 'block';
+											}
+										}, 3000);
+									}
+								});
+							});
+							socket.on('getCity', (body) => {
+								score3 = body.score;
+								if (score3[whoGo] > score3[(whoGo+1)%2]) {
+									document.querySelector('#game3_score').innerHTML = 
+										`<p><b>"${name}" ${score3[whoGo]}</b> : ${score3[(whoGo+1)%2]} "${opponent}"</p>`;
+								} else if (score3[whoGo] < score3[(whoGo+1)%2]) {
+									document.querySelector('#game3_score').innerHTML = 
+										`<p>"${name}" ${score3[whoGo]} : <b>${score3[(whoGo+1)%2]} "${opponent}"</b></p>`;
+								} else {
+									document.querySelector('#game3_score').innerHTML = 
+										`<p>"${name}" 0 : 0 "${opponent}"</p>`;
+								}
+								if (body.name === opponent) {
+									if (markersLayer3 !== undefined) {
+										markersLayer3.clearLayers();
+									}
+									game3Set.add(body.city.city);
+									lastCoord3 = [body.city.latitude, body.city.longitude];
+									markers3.push(L.marker([body.city.latitude, body.city.longitude]).bindPopup(body.city.city));
+									if (markers3.length > 2) {
+										markers3.shift();
+									}
+									markersLayer3 = L.featureGroup(markers3).addTo(map_game3);
+									map_game3.fitBounds(markersLayer3.getBounds());
+									document.querySelector('#game3_area').style.display = 'block';
+									document.querySelector('#game3_waiting').style.display = 'none';
+									let lastletter2 = lastLetter(body.city.city);
+									document.querySelector('#game3_town').value = lastletter2.toUpperCase();
+									document.querySelector('label[for="game3_town"]').textContent = `Ваш город на ${lastletter2.toUpperCase()}:`;
+								}
+							});
+							socket.on('error', (body) => {
+								if (body.type === 'pre_game') {
+									document.querySelector('#game3_start').style.display = 'inline';
+									document.querySelector('#game3_waiting').style.display = 'none';
+									alert(body.text);
+								} else if (body.type === 'in_game') {
+									document.querySelector('#game3_area').style.display = 'inline';
+									document.querySelector('#game3_waiting').style.display = 'none';
+									if (markersLayer3 !== undefined) {
+										markersLayer3.clearLayers();
+									}
+									markersLayer3 = L.featureGroup(markersCopy).addTo(map_game3);
+									map_game3.fitBounds(markersLayer3.getBounds());
+									game3Set.delete($('#game3_town').value);
+									alert(body.text);
+								}
+							});
+							socket.on('exit', (data) => {
+								document.querySelector('#game3_area').style.display = 'none';
+								document.querySelector('#game3_score').style.display = 'none';
+								document.querySelector('#game3_map').style.display = 'none';
+								document.querySelector('#game3_waiting').style.display = 'block';
+								document.querySelector('#game3_waiting').innerHTML = `
+									<p>К сожалению ${data.name} покинул игру. Игра окончена.</p>
+									<p>Счет игры "${name}" ${score3[whoGo]} : ${score3[(whoGo+1)%2]} "${opponent}"</p>
+								`;
+								document.querySelector('#game3_start').style.display = 'block';
+								game3Set.clear();
+							});
+							socket.on("disconnect", (reason) => {
+								document.querySelector('#game3_area').style.display = 'none';
+								document.querySelector('#game3_score').style.display = 'none';
+								document.querySelector('#game3_map').style.display = 'none';
+								document.querySelector('#game3_waiting').style.display = 'block';
+								document.querySelector('#game3_waiting').innerHTML = `
+									<p>К сожалению соединение с сервером потеряно. Игра окончена.</p>
+									<p>Счет игры "${name}" ${score3[whoGo]} : ${score3[(whoGo+1)%2]} "${opponent}"</p>
+									Для старта новой игры - обновите страницу.`;
+								game3Set.clear();
+							});
+						});
+
+						document.querySelector('#game3_start').style.display = 'none';
+						document.querySelector('#game3_waiting').style.display = 'block';
+						name = document.querySelector('#game3_name').value;
+						document.querySelector('#game3_waiting').innerHTML = `<p>Ожидайте игрока</p>`;
+						socket.emit('start', name);
+					} else {
+						alert('Соединение с сервером отсутствует, попробуйте начать игру позднее, перезагрузив страницу.');
+					}
+				};
+				document.querySelector('#game3_set_result').onclick = async () => {
+					let town = document.querySelector('#game3_town').value;
+					if (game3Set.has(town)) {
+						alert('Данный город уже был');
+					} else {
+						game3Set.add(town);
+						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						let text = await response.text();
+						text = JSON.parse(text);
+						if (text.error === undefined || text.error === null) {
+							if (text.no === undefined) {
+								if (markersLayer3 !== undefined) {
+									markersLayer3.clearLayers();
+								}
+								
+								if (lastCoord3.length === 2) {
+									score3[whoGo] += Math.floor(ortodroma (text.latitude, text.longitude, lastCoord3[0], lastCoord3[1]));
+								}
+								lastCoord3 = [text.latitude, text.longitude];
+								markersCopy = Object.values(markers3);
+								markers3.push(L.marker([text.latitude, text.longitude]).bindPopup(text.city));
+								if (markers3.length > 2) {
+									markers3.shift();
+								}
+								markersLayer3 = L.featureGroup(markers3).addTo(map_game3);
+								map_game3.fitBounds(markersLayer3.getBounds());
+								socket.emit('sendCity', {
+									score: score3,
+									name,
+									room,
+									city: text,
+								});
+								document.querySelector('#game3_button_start').style.display = 'none';
+								document.querySelector('#game3_area').style.display = 'none';
+								document.querySelector('#game3_waiting').innerHTML = 'Подождите, пока Ваш оппонент сделает ход.';
+								document.querySelector('#game3_waiting').style.display = 'block';
+							} else {
+								alert(text.no);
+							}
+						} else {
+							document.querySelector('#game3_town2').innerHTML = `
+								<p>Произошла ошибка, игра окончена.</p>
+							`;
+							document.querySelector('#game3_set_result').style.display = 'none';
+							console.log('Ошибка: ', text.error);
+						}
+					}
+				};
+		
 			}
 
 			function ortodroma (latA, lonA, latB, lonB) {
@@ -779,6 +1109,17 @@
 					}
 				table += '</tbody></table>';
 				document.querySelector('#table').innerHTML = table;
+			}
+
+			function lastLetter (town) {
+				let lastletter;
+				for (let i = -1; i > -town.length; i--) {
+					lastletter = town.substr(i, 1);
+					if (['ь', 'ъ', 'ы'].indexOf(lastletter) === -1) {
+						break;
+					}
+				}
+				return lastletter;
 			}
 		</script>
 	</body>
