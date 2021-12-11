@@ -962,34 +962,56 @@
 				}
 
 				// Игра 2
+				//Программируем клик по кнопке старт
 				document.querySelector('#game2_start').onclick = () => {
+					//Скрываем саму кнопку
 					document.querySelector('#game2_start').style.display = 'none';
+					//Отобразим игровое поле
 					document.querySelector('#game2_area').style.display = 'block';
+					//Отобразим счет и покажем нулевой счет
 					document.querySelector('#game2_score').style.display = 'block';
 					document.querySelector('#game2_score').innerHTML = 'Игрок 0 : 0 Компьютер';
+					//Инициализируем карту
 					map_game2 = L.map('game2_map').setView([51.478, 0, 0], 13);
+					//Подгрузим тайлы карты и добавим их на карту
 					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 					.addTo(map_game2);
+					//Обнуляем переменную счета на начало игры
 					score2 = [0, 0];
 				}
+				//Что бы города не повторялись используем множество. так как в нем все элементы уникальны
 				const game2Set = new Set();
+				//Програмируем клик отправки города
 				document.querySelector('#game2_set_result').onclick = async () => {
+					//получаем город из поля
 					let town = document.querySelector('#game2_town').value;
+					//Делаем проверку, что этот город еще не был введен
 					if (game2Set.has(town)) {
 						alert('Данный город уже был');
 					} else {
+						//Если такого города нет, то добавим его в множество
 						game2Set.add(town);
+						//делаем запрос к игровому серверу о получении информации о введенном городе
 						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						//получаем текст сообщения
 						let text = await response.text();
+						//так как ответ приходит в формате JSON, предварительно отпарсим его
 						text = JSON.parse(text);
-						console.log(text);
+						//Делаем проверку на ошибки, если поле с ошибкой не пусто, то оповещаем, если нет, идем дальше
 						if (text.error === undefined || text.error === null) {
+							//делаем проверку на существование города. если город существует, то идем дальше.
 							if (text.no === undefined) {
+								//Получаем последнюю букву города, чтобы следующий начинался на предыдущую
 								let lastletter = lastLetter(town);
+								//Предварительно очистим слой с метками
 								if (markersLayer2 !== undefined) {
 									markersLayer2.clearLayers();
 								}
+								//Обнулим массив меток
 								markers2 = [];
+								//Если в переменной последних координат есть запись, то считаем ортодрому
+								//между Вашим городом и городом компьютера. Отбрасываем дробную часть и записываем
+								//в счет игрока
 								if (lastCoord2.length === 2) {
 									score2[0] += Math.floor(
 										ortodroma(
@@ -998,17 +1020,26 @@
 										)
 									);
 								}
+								//обновим переменную последних координат
 								lastCoord2 = [text.latitude, text.longitude];
+								//Добавим метку введенного пользователем города
 								markers2.push(
 									L.marker([text.latitude, text.longitude]).
 									bindPopup(text.city)
 								);
+								//делаем запрос к игровому серверу о получении города на последнюю букву введенного города
 								response = await fetch(`http://city.9pr.ru/lastletter/${lastletter}`);
+								//получаем текст сообщения
 								text = await response.text();
+								//так как ответ приходит в формате JSON, предварительно отпарсим его
 								text = JSON.parse(text);
+								//Делаем проверку на ошибки, если поле с ошибкой не пусто, то оповещаем, если нет, идем дальше
 								if (text.error === undefined || text.error === null) {
-									console.log(text);
+									//Добавим город в множество, чтобы не повторялся и этот город
 									game2Set.add(text.city);
+									//Если в переменной последних координат есть запись, то считаем ортодрому
+									//между Вашим городом и городом компьютера. Отбрасываем дробную часть и записываем
+									//в счет компьютера
 									if (lastCoord2.length === 2) {
 										score2[1] += Math.floor(
 											ortodroma(
@@ -1017,42 +1048,53 @@
 											)
 										);
 									}
+									//обновим переменную последних координат
 									lastCoord2 = [text.latitude, text.longitude];
-								
+									//Добавим и его в массив меток для карты
 									markers2.push(
 										L.marker([text.latitude, text.longitude]).
 										bindPopup(text.city)
 									);
+									//Покажем информацию об обоих городах
 									document.querySelector('#game2_town2').innerHTML = `
 										<div>Ваш город: ${town}. <br> Город противника
 											${text.city}</div>
 									`;
+									//Для удобства первую букву нового города покажем в лейбле 
 									document.querySelector('label[for="game2_town"]').textContent = `
 											Ваш город на ${lastLetter(text.city).toUpperCase()}:
 									`;
+									//а так же сразу вставим её в поле ввода
 									document.querySelector('#game2_town').value = 
-									lastLetter(text.city).toUpperCase();
+										lastLetter(text.city).toUpperCase();
+									//Добавим метки на карту
 									markersLayer2 = L.featureGroup(markers2).addTo(map_game2);
+									//Передвинем карту, чтобы обе метки оказались в зоне видимости
 									map_game2.fitBounds(markersLayer2.getBounds());
+									//Выведем счет на экран по принципу. Разница между ведущим игроком
+									// и отстающим у ведущего и 0 у отстающего всегда. Это сделано, чтобы 
+									// не перегружать экран большими числами
 									document.querySelector('#game2_score').innerHTML =
 									score2[0] >= score2[1] ?
 									`<b>Игрок</b> ${score2[0]-score2[1]} : 0 Компьютер` :
 									`Игрок 0 : ${score2[1]-score2[0]} Компьютер`
 								} else {
+									//Выведем ошибку
 									document.querySelector('#game2_town2').innerHTML =
 									'Произошла ошибка, игра окончена.';
 									console.log('Ошибка: ', text.error);
 								}
 							} else {
+								//Выведем ошибку
 								alert('Такого города не существует');
 							}
 						} else {
+							//Выведем ошибку
 							document.querySelector('#game2_town2').innerHTML =
 							'Произошла ошибка, игра окончена.';
 							console.log('Ошибка: ', text.error);
 						}
 					}
-					console.log(town);
 				}
 
 				//3игра
