@@ -4,26 +4,30 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+		<!-- Название презентации -->
 		<title>География и геометрия</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
+		<!-- Тема презентации -->
 		<link rel="stylesheet" href="dist/theme/sky.css" id="theme">
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
-		
-		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
 
 		<style>
+			/* Чтобы поля ввода были такого же размера, как и текст, увеличим размер шрифта дополнительно */
 			input, select {
 				font-size: 25px;
 			}
+			/* Чтобы тригонометрическая таблица влезла опытным путем уменьшим размер на 30%*/
 			#table {
 				font-size: 70%;
 			}
+			/* Для невидимых элементов создадим скрывающий класс */
 			.hide {
 				display: none;
 			}
+			/* Высоту карты задаем обязательно, опытным путем определили высоту в 350 пикселей */
 			.map {
 				height: 350px;
 			}
@@ -31,8 +35,18 @@
 	</head>
 	<body>
 		<div class="reveal">
+			<!-- Все слайды размечаем внутри slides -->
 			<div class="slides">
 
+				<!-- 
+					Слайд заголовок
+					Используем 1 заголовок 
+					Так как используется markdown прописываем дополнительно аттрибутами 
+						data-markdown data-separator-notes="^Note:"
+						а так же помещаем markdown разметку внутрь <script type="text/template"></script>
+					Для заметок используем конструкцию Note: новая строка
+					Для центрирования по вертикали используйте класс center
+				-->
 				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						География и геометрия
@@ -43,6 +57,7 @@
 					</script>
 				</section>
 
+				<!-- В слайдах разделителях используем 2 заголовок -->
 				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Определения
@@ -51,6 +66,11 @@
 					</script>
 				</section>
 
+				<!-- 
+					В обычных слайдах используем 3 заголовок
+					Греческие буквы можно набирать с помощью греческой раскладки клавиатуры или 
+					простым копированием с эталонного алфавита
+				 -->
 				<section data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						### География
@@ -79,6 +99,7 @@
 					</script>
 				</section>
 
+				<!-- Также греческие буквы можно набирать с помощью html мнемоники -->
 				<section data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						### Геометрия
@@ -131,6 +152,10 @@
 					</script>
 				</section>
 
+				<!-- 
+					Для вставки формул используйте конструкции $$ $$ или $ $
+					Греческие буквы можно также набрать с помощью TeX
+				 -->
 				<section data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						### Широта
@@ -305,15 +330,24 @@
 					</script>
 				</section>
 
+				<!-- 
+					Для слайдов с программами используйте чистый HTML без доп аргументов в section
+					Помните, что id элементов должны быть уникальными
+					Проверьте, что Вы обращаетесь с элементов с id, которые существуют
+				-->
 				<section>
 					<h3>Конвертер величин</h3>
+					<!-- Поле для ввода конвертируемого значения -->
 					<input type="text" name="" id="converter_value" 
-						placeholder="Градусы или радианы">
+					placeholder="Градусы или радианы">
+					<!-- Выпадающее меню с вариантам конвертации -->
 					<select id="converter_type">
 						<option value="radian">Радиан</option>
 						<option value="degree">Градус</option>
 					</select>
+					<!-- Кнопка конвертации -->
 					<input type="button" id="converter_button" value="Конвертировать">
+					<!-- Поле вывода -->
 					<output id="converter_out"></output>
 				</section>
 
@@ -341,6 +375,7 @@
 
 				<section>
 					<h3>Тригонометрический круг</h3>
+					<!-- Блок для рисования библиотекой plotly -->
 					<div id="plot" style="height: 400px; margin-left:25%;"></div>
 				</section>
 
@@ -372,6 +407,7 @@
 
 				<section>
 					<h3>Таблица тригонометрических функций</h3>
+					<!-- Сюда сгенерируем тригонометрическую таблицу -->
 					<output id="table"></output>
 				</section>
 
@@ -420,6 +456,7 @@
 				<section>
 					<h3>Рассчет ортодромии</h3>
 					<div>
+						<!-- Поля для ввода конвертируемого значения широты и долготы точки А-->
 						<label>Широта А
 							<input type="text" id="latA">
 						</label> <br>
@@ -428,6 +465,7 @@
 						</label>
 					</div>
 					<div>
+						<!-- Поля для ввода конвертируемого значения широты и долготы точки B-->
 						<label>Широта B
 							<input type="text" id="latB">
 						</label> <br>
@@ -436,8 +474,10 @@
 						</label>
 					</div>
 					<div>
+						<!-- Кнопка для расчета -->
 						<input id="ortodroma" type="button" value="Посчитать">
 					</div>
+					<!-- Вывод результата -->
 					<output id="ortodroma_out"></output>
 				</section>
 
@@ -454,55 +494,81 @@
 
 				<section>
 					<h3>Игра 1. Города классические</h3>
+					<!-- Кнопка начала игры -->
 					<div id="game1_button_start" class="show">
 						<input type="button" value="Начать игру" id="game1_start">
 					</div>
+					<!-- Игровое поле -->
 					<div id="game1_area" class="hide">
+						<!-- Лейбл для показа первой буквы города -->
 						<label for="game1_town">Ваш город:</label>
+						<!-- Поле для ввода города -->
 						<input type="text" id="game1_town" >
+						<!-- Кнопка для отправки города на сервер -->
 						<input type="button" id="game1_set_result" value="Отправить город">
+						<!-- Текущая информация об игре -->
 						<output id="game1_town2"></output>
 					</div>
+					<!-- Карта для показа меток -->
 					<div class="map" id="game1_map"></div>
 				</section>
 
 				<section>
 					<h3>Игра 2. Города на расстояние</h3>
+					<!-- Кнопка начала игры -->
 					<div id="game2_button_start" class="show">
 						<input type="button" value="Начать игру" id="game2_start">
 					</div>
+					<!-- Игровое поле -->
 					<div id="game2_area" class="hide">
+						<!-- Лейбл для показа первой буквы города -->
 						<label for="game2_town">Ваш город:</label>
+						<!-- Поле для ввода города -->
 						<input type="text" id="game2_town" >
+						<!-- Кнопка для отправки города на сервер -->
 						<input type="button" id="game2_set_result" value="Отправить город">
+						<!-- Текущая информация об игре -->
 						<output id="game2_town2"></output>
 					</div>
+					<!-- Текущий счет игры. -->
 					<div id="game2_score" class="hide">
 						<span>Счет: </span>
 						<span id="game2_score"></span>
 					</div>
+					<!-- Карта для показа меток -->
 					<div class="map" id="game2_map"></div>
 				</section>
 
 				<section>
 					<h3>Игра 3. Города на расстояние. Многопользовательская</h3>
+					<!-- Поле начала игры -->
 					<div id="game3_button_start" class="show">
 						<label for="game3_name"></label>
+						<!-- Поле для ввода имени играющего -->
 						<input type="text" id="game3_name" value="Fox">
+						<!-- Кнопка начала игры -->
 						<input type="button" value="Начать игру" id="game3_start">
 					</div>
+					<!-- Блок для информации об ожидании игрока -->
 					<div id="game3_waiting">
 					</div>
+					<!-- Игровое поле -->
 					<div id="game3_area" class="hide">
+						<!-- Лейбл для показа первой буквы города -->
 						<label for="game3_town">Ваш город:</label>
+						<!-- Поле для ввода города -->
 						<input type="text" id="game3_town" >
+						<!-- Кнопка для отправки города на сервер -->
 						<input type="button" id="game3_set_result" value="Отправить город">
+						<!-- Текущая информация об игре -->
 						<output id="game3_town2"></output>
 					</div>
+					<!-- Текущий счет игры. -->
 					<div id="game3_score" class="hide">
 						<span>Счет: </span>
 						<span id="game3_score"></span>
 					</div>
+					<!-- Карта для показа меток -->
 					<div class="map" id="game3_map"></div>
 				</section>
 
@@ -516,23 +582,32 @@
 					</script>
 				</section>
 
+				<!-- 
+					Изображение можно вставить несколькими способами
+				-->
+				<!-- 
+					Первый способ, растягиваем на весь экран. Используем для качественных фото
+				-->
 				<section
-					data-background-image="image/1.jpg"
-					data-menu-title="Абстрактная живопись"
+				data-background-image="image/1.jpg"
+				data-menu-title="Абстрактная живопись"
 				></section>
-
+				<!-- 
+					Второй способ, вставляем на весь экран, но показываем весь размер. Используем для вертикальных фото или 
+					любого другого качественного фото не совпадающем по отношением сторон
+				-->
 				<section
-					data-background-image="image/yoda.jpg"
-					data-background-size="contain"
-					data-menu-title="Мастер Йода"
+				data-background-image="image/yoda.jpg"
+				data-background-size="contain"
+				data-menu-title="Мастер Йода"
 				></section>
-
+				<!-- 
+					Третий способ, используем для менее качественных фото с небольшим разрешением
+				-->
 				<section data-menu-title="Конь Юлий">
 					<img src="image/juliy.jpg" alt="Конь Юлий">
 				</section>		
 				
-				
-
 				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Спасибо за внимание
@@ -548,78 +623,93 @@
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+		<!-- Вставляем стандартный плагин математики -->
 		<script src="plugin/math/math.js"></script>
-
+		
+		<!-- Все библиотеки ниже скачиваются отдельно со своих официальных сайтов-->
+		<!-- Математические библиотеки math.js и algebrite  -->
 		<script src="js/algebrite.bundle-for-browser.js"></script>
 		<script src="js/math.js"></script>
+		<!-- Библиотека для рисования -->
 		<script src="js/plotly-2.6.3.min.js"></script>
+		<!-- Библиотека географических карт, вставляется по инструкции на официальном сайте -->
 		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+		<!-- Библиотека websocket игрового сервера -->
 		<script src="http://city.9pr.ru/socket.io/socket.io.js"></script>
 
 		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
 			Reveal.initialize({
-				hash: true,
-
-				center: false,
-
-				slideNumber: true,
-
-				controls: true, 
-
+				hash: true, // данная настройка позволит после перезагрузки презентации вернутся к последнему открытому слайду
+				center: false, //Привязываем вверх слайда к верху экрана
+				slideNumber: true, //Показываем номер страницы
+				controls: true, //Разрешаем управлять презентацией с помощью клавиатуры
+				//Так как меню старый плагин, загружаем его старым методом
 				dependencies: [
 					{
 						src: 'plugin/menu/menu.js'
 					},
 				],
-
+				//Настраиваем меню, показывая номер слайда и маркер пройденных слайдов
 				menu : {
 					numbers: true,
 					markers: true, 
 				},
-
-				// Learn about plugins: https://revealjs.com/plugins/
+				//Дополнительно подключим KaTeX
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
 			});
 		</script>
 		<script>
+			//Переменные слоя карты, содержающие метки городов
 			let markersLayer;
 			let markersLayer2;
+			let markersLayer3;
+			//Массив меток городов
 			let markers;
 			let markers2;
-			let score2 = [];
-			let lastCoord2 = [];
-
 			let markers3 = [];
+			//Копия последнего массива меток для отката назад, если понадобится
 			let markersCopy = [];
-			let markersLayer3;
+			//Счет игры
+			let score2 = [0,0];
 			let score3 = [0,0];
+			//Последние координаты для подсчета счета игры
+			let lastCoord2 = [];
 			let lastCoord3 = [];
+			//Имя играющего
 			let name;
+			//Имя противника
 			let opponent;
+			//Метка кто ходит первым, а кто вторым
 			let whoGo;
+			//Номер игровой комнаты
 			let room;
+			//Ссылка на подключение сокета
 			let socket;
+			//Множество городов для третьей игры
 			let game3Set;
 
-
+			//Запускаем наши программы только после того, как вся страница полностью прогрузится
 			window.onload = () => {
 
 				//Рисуем круг
 				let layout = {
+					//Заголовок
 					title: 'Тригонометрический круг',
+					//Ограничение координатной плоскости
 					xaxis: {
 						range: [-1.5, 1.5],
 					},
 					yaxis: {
 						range: [-1.5, 1.5],
 					},
+					//Ширина и высота координатной плоскости
 					width: 500,
 					height: 500,
+					//Графики
 					shapes: [
 						{
+							// окружность задается с помощью описаного около него прямоугольника
+							// по координатам левой нижнего и правого верхнего угла
 							type: 'circle',
 							xref: 'x',
 							yref: 'y',
@@ -632,6 +722,7 @@
 							},
 						},
 						{
+							// Отрезки задаются с помощью координат концом. Координаты считаются по теореме Пифагора
 							type: 'line',
 							x0: 0,
 							y0: 0,
@@ -665,6 +756,7 @@
 							},
 						},
 					],
+					//Подписи графиков
 					annotations: [
 						{
 							x: 0,
@@ -702,17 +794,23 @@
 						},
 					],
 				};
+				//Рисуем график, 1 аргумент id блока, в который рисуем
+				//2 аргумент оставим пустой массив, 3 аргумент объект с данными
 				Plotly.newPlot('plot', [], layout);
 
 				//Рассчет ортодромы
+				//Программируем кнопка подсчета
 				document.querySelector('#ortodroma').onclick = (e) => {
+					//Считываем координаты точек
 					let latA = document.querySelector('#latA').value;
 					let latB = document.querySelector('#latB').value;
 					let lonA = document.querySelector('#lonA').value;
 					let lonB = document.querySelector('#lonB').value;
+					//Делаем проверку на пустоту полей. Если хотя бы 1 не заполнено, то выводим ошибку
 					if (latA === '' || latB === '' || lonA === '' || lonB === '') {
 						alert('Не все поля заполнены');
 					}
+					//Ставим ограничение по максимальным значениям долготы и широты
 					if (
 						+latA < -90 || +latA > 90 ||
 						+latB < -90 || +latB > 90 ||
@@ -721,103 +819,146 @@
 					) {
 						alert('Неверное значение одного из полей');
 					}
+					//Считаем ортодрому между 2 точками
 					let result = ortodroma(+latA, +lonA, +latB, +lonB);
+					//Выводим результат в специальное поле
 					document.querySelector('#ortodroma_out').innerHTML = result;
 				}
 
 				// Конвертер величин
 				document.querySelector('#converter_button').onclick = () => {
+					//Считываем данные из формы
 					let converterValue = document.querySelector('#converter_value');
 					let converterType = document.querySelector('#converter_type');
 					let converterOut = document.querySelector('#converter_out');
+					//Делаем проверку на пустоту
 					if (converterValue.value === '') {
 						alert('Поле не заполнено');
 					}
+					//Получаем значение выпадающего меню
+					// 0 - это радианы
+					// 1 - это градусы
 					let currentType = +converterType.options.selectedIndex;
 					if (currentType === 0) {
+						//Формируем формулы перевода и рендерим катехом
 						result = katex.renderToString( 
 							math.evaluate('180 * ' + converterValue.value + '/ pi') + 
 							'^{\\circ}');
 					} else if (currentType === 1) {
+						//Формируем формулы перевода и рендерим катехом
 						result = katex.renderToString( math.simplify(converterValue.value + 
 						' * pi / 180').toTex());
 					}
+					//Записываем результат в поле вывода
 					converterOut.innerHTML = result;
 				}
 
 				//Таблица тригонометрических функций
+				//Массив значений для таблицы
 				let values = ['0', 'pi/6', 'pi/4', 'pi/3', 'pi/2', 
 					'pi', '3pi/2', '2pi',	
 				];
+				//Массив функций для таблицы
 				let functions = ['sin', 'cos', 'tan'];
+				//Запускаем функцию генерирующую таблицу
 				trigonometry(values, functions);
 
 				// Игра 1
+				//Программируем клик по кнопке старт
 				document.querySelector('#game1_start').onclick = () => {
+					//Скрываем саму кнопку
 					document.querySelector('#game1_start').style.display = 'none';
+					//Отобразим игровое поле
 					document.querySelector('#game1_area').style.display = 'block';
+					//Инициализируем карту
 					map_game1 = L.map('game1_map').setView([51.478, 0, 0], 13);
+					//Подгрузим тайлы карты и добавим их на карту
 					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 					.addTo(map_game1);
 				}
+				//Что бы города не повторялись используем множество. так как в нем все элементы уникальны
 				const game1Set = new Set();
+				//Програмируем клик отправки города
 				document.querySelector('#game1_set_result').onclick = async () => {
+					//получаем город из поля
 					let town = document.querySelector('#game1_town').value;
+					//Делаем проверку, что этот город еще не был введен
 					if (game1Set.has(town)) {
 						alert('Данный город уже был');
 					} else {
+						//Если такого города нет, то добавим его в множество
 						game1Set.add(town);
+						//делаем запрос к игровому серверу о получении информации о введенном городе
 						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						//получаем текст сообщения
 						let text = await response.text();
+						//так как ответ приходит в формате JSON, предварительно отпарсим его
 						text = JSON.parse(text);
-						console.log(text);
+						//Делаем проверку на ошибки, если поле с ошибкой не пусто, то оповещаем, если нет, идем дальше
 						if (text.error === undefined || text.error === null) {
+							//делаем проверку на существование города. если город существует, то идем дальше.
 							if (text.no === undefined) {
+								//Получаем последнюю букву города, чтобы следующий начинался на предыдущую
 								let lastletter = lastLetter(town);
+								//Предварительно очистим слой с метками
 								if (markersLayer !== undefined) {
 									markersLayer.clearLayers();
 								}
+								//Обнулим массив меток
 								markers = [];
+								//Добавим метку введенного пользователем города
 								markers.push(
 									L.marker([text.latitude, text.longitude]).
 									bindPopup(text.city)
 								);
+								//делаем запрос к игровому серверу о получении города на последнюю букву введенного города
 								response = await fetch(`http://city.9pr.ru/lastletter/${lastletter}`);
+								//получаем текст сообщения
 								text = await response.text();
+								//так как ответ приходит в формате JSON, предварительно отпарсим его
 								text = JSON.parse(text);
+								//Делаем проверку на ошибки, если поле с ошибкой не пусто, то оповещаем, если нет, идем дальше
 								if (text.error === undefined || text.error === null) {
-									console.log(text);
+									//Добавим город в множество, чтобы не повторялся и этот город
 									game1Set.add(text.city);
+									//Добавим и его в массив меток для карты
 									markers.push(
 										L.marker([text.latitude, text.longitude]).
 										bindPopup(text.city)
 									);
+									//Покажем информацию об обоих городах
 									document.querySelector('#game1_town2').innerHTML = `
 										<div>Ваш город: ${town}. <br> Город противника
 											${text.city}</div>
 									`;
+									//Для удобства первую букву нового города покажем в лейбле 
 									document.querySelector('label[for="game1_town"]').textContent = `
 											Ваш город на ${lastLetter(text.city).toUpperCase()}:
 									`;
+									//а так же сразу вставим её в поле ввода
 									document.querySelector('#game1_town').value = 
-									lastLetter(text.city).toUpperCase();
+										lastLetter(text.city).toUpperCase();
+									//Добавим метки на карту
 									markersLayer = L.featureGroup(markers).addTo(map_game1);
+									//Передвинем карту, чтобы обе метки оказались в зоне видимости
 									map_game1.fitBounds(markersLayer.getBounds());
 								} else {
+									//Выведем ошибку
 									document.querySelector('#game1_town1').innerHTML =
 									'Произошла ошибка, игра окончена.';
 									console.log('Ошибка: ', text.error);
 								}
 							} else {
+								//Выведем ошибку
 								alert('Такого города не существует');
 							}
 						} else {
+							//Выведем ошибку
 							document.querySelector('#game1_town1').innerHTML =
 							'Произошла ошибка, игра окончена.';
 							console.log('Ошибка: ', text.error);
 						}
 					}
-					console.log(town);
 				}
 
 				// Игра 2
