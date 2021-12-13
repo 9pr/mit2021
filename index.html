@@ -95,6 +95,7 @@
 						экономических ресурсов.
 				
 						Note:
+						
 
 					</script>
 				</section>
@@ -691,6 +692,14 @@
 			//Запускаем наши программы только после того, как вся страница полностью прогрузится
 			window.onload = () => {
 
+				document.addEventListener('keydown', (event) => {
+					if (event.keyCode === 77 && ['INPUT'].indexOf(
+						event.target.tagName
+					) > -1) {
+						RevealMenu.toggle();
+					}
+				});
+
 				//Рисуем круг
 				let layout = {
 					//Заголовок
@@ -1098,11 +1107,18 @@
 				}
 
 				//3игра
+				//Что бы города не повторялись используем множество. так как в нем все элементы уникальны
 				game3Set = new Set();
+				//Программируем клик по кнопке старт
 				document.querySelector('#game3_start').onclick = () => {
+					//Если сокеты игрового сервера не прогрузились, то играть бессмысленно, выдаем ошибку.
+					//В противном случае подключаемся к игровому серверу.
 					if (typeof io !== 'undefined') {
+						//Подключаемся к сокетам игрового сервера
 						socket = io("http://city.9pr.ru");
+						//Все события сокетов проводим внутри этого блока
 						socket.on("connect", () => {
+							//сокет ожидания игрока. Как только к игре кто-то присоеденился, то мы получим этот сокет
 							socket.on('wait', (body) => {
 								room = body.room;
 								Object.keys(body.gamers).forEach(gamePlayer => {
@@ -1286,8 +1302,17 @@
 						table += `<tr><td>${func}${
 							katex.renderToString('\\alpha')}</td>`;
 							for (value of values) {
-								table += `<td>${katex.renderToString(Algebrite.simplify(
-									func+'('+value+')').toLatexString())}</td>`;
+								let result = Algebrite.simplify(func+'('+value+')');
+								if (result.cons.car !== null &&
+									result.cons.car.printname == 'tan') {
+										table += `<td>${katex.renderToString(
+											'\\infty'
+										)}</td>`;
+								} else {
+									table += `<td>${katex.renderToString(
+											result.toLatexString()
+										)}</td>`;
+								}
 							}
 					}
 				table += '</tbody></table>';
