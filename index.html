@@ -636,7 +636,7 @@
 		<!-- Библиотека географических карт, вставляется по инструкции на официальном сайте -->
 		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 		<!-- Библиотека websocket игрового сервера -->
-		<script src="http://city.9pr.ru/socket.io/socket.io.js"></script>
+		<script src="https://city.9pr.ru/socket.io/socket.io.js"></script>
 
 		<script>
 			Reveal.initialize({
@@ -898,7 +898,7 @@
 						//Если такого города нет, то добавим его в множество
 						game1Set.add(town);
 						//делаем запрос к игровому серверу о получении информации о введенном городе
-						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						let response = await fetch(`https://city.9pr.ru/city/${town}`);
 						//получаем текст сообщения
 						let text = await response.text();
 						//так как ответ приходит в формате JSON, предварительно отпарсим его
@@ -921,7 +921,7 @@
 									bindPopup(text.city)
 								);
 								//делаем запрос к игровому серверу о получении города на последнюю букву введенного города
-								response = await fetch(`http://city.9pr.ru/lastletter/${lastletter}`);
+								response = await fetch(`https://city.9pr.ru/lastletter/${lastletter}`);
 								//получаем текст сообщения
 								text = await response.text();
 								//так как ответ приходит в формате JSON, предварительно отпарсим его
@@ -1001,7 +1001,7 @@
 						//Если такого города нет, то добавим его в множество
 						game2Set.add(town);
 						//делаем запрос к игровому серверу о получении информации о введенном городе
-						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						let response = await fetch(`https://city.9pr.ru/city/${town}`);
 						//получаем текст сообщения
 						let text = await response.text();
 						//так как ответ приходит в формате JSON, предварительно отпарсим его
@@ -1037,7 +1037,7 @@
 									bindPopup(text.city)
 								);
 								//делаем запрос к игровому серверу о получении города на последнюю букву введенного города
-								response = await fetch(`http://city.9pr.ru/lastletter/${lastletter}`);
+								response = await fetch(`https://city.9pr.ru/lastletter/${lastletter}`);
 								//получаем текст сообщения
 								text = await response.text();
 								//так как ответ приходит в формате JSON, предварительно отпарсим его
@@ -1115,7 +1115,7 @@
 					//В противном случае подключаемся к игровому серверу.
 					if (typeof io !== 'undefined') {
 						//Подключаемся к сокетам игрового сервера
-						socket = io("http://city.9pr.ru");
+						socket = io("https://city.9pr.ru");
 						//Все события сокетов проводим внутри этого блока
 						socket.on("connect", () => {
 							//сокет ожидания игрока. Как только к игре кто-то присоеденился, то мы получим этот сокет
@@ -1233,7 +1233,7 @@
 						alert('Данный город уже был');
 					} else {
 						game3Set.add(town);
-						let response = await fetch(`http://city.9pr.ru/city/${town}`);
+						let response = await fetch(`https://city.9pr.ru/city/${town}`);
 						let text = await response.text();
 						text = JSON.parse(text);
 						if (text.error === undefined || text.error === null) {
