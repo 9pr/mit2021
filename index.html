@@ -1120,33 +1120,54 @@
 						socket.on("connect", () => {
 							//сокет ожидания игрока. Как только к игре кто-то присоеденился, то мы получим этот сокет
 							socket.on('wait', (body) => {
+								//получим id игровой комнаты, в которой идет игра
 								room = body.room;
+								//Обойдем всех игроков в комнате
 								Object.keys(body.gamers).forEach(gamePlayer => {
+									//когда найдем не себя, запустим процесс начала игры
 									if (name !== gamePlayer) {
+										//Запишем имя соперника
 										opponent = gamePlayer;
+										//Запишем порядок хода
 										whoGo = body.gamers[gamePlayer][1];
+										//Выводим на экран сообщение о том, кто присоеденился к игре
 										document.querySelector('#game3_waiting').innerHTML = `К игре присоеденился: ${gamePlayer}. Ожидайте начала игры.`;
+										//По таймауту отображаем игровое поле. Таймаут нужен для предотвращения ошибок подключения
 										setTimeout(() => {
+											//Скрываем кнопки начала игры и сообщения о присоединения к игре
 											document.querySelector('#game3_button_start').style.display = 'none';
 											document.querySelector('#game3_area').style.display = 'none';
 											document.querySelector('#game3_waiting').style.display = 'none';
+											//Отображаем первоначальный счет игры с именами игроками
 											document.querySelector('#game3_score').style.display = 'block';
 											document.querySelector('#game3_score').innerHTML = `"${name}" 0 : 0 "${opponent}"`;
+											//Инициализируем карту
 											map_game3 = L.map('game3_map').setView([51.478, 0, 0], 13);
+											//Заполняем её тайлами
 											L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map_game3);
+											//Обнуляем счет игры
 											score3 = [0,0];
+											//Второй игрок должен подождать пока ход сделает первый игрок, поэтому выводим ему блокирующее сообщение
 											if (whoGo == 1) {
 												document.querySelector('#game3_waiting').style.display = 'block';
 												document.querySelector('#game3_waiting').innerHTML = 'Подождите, пока Ваш оппонент сделает ход.';
+											//Первому игроку выводим игровое поле
 											} else {
 												document.querySelector('#game3_area').style.display = 'block';
 											}
+											//Таймаут делаем 3 секунды
 										}, 3000);
 									}
 								});
 							});
+							//Событие на получения города, отправленного соперником
 							socket.on('getCity', (body) => {
+								//Получаем счет
 								score3 = body.score;
+								//Расписываем счет в поле счета по принципу. Ведущий - разность счета двух игроков. Отстающий - ноль.
+								//При ничьей 0:0. Это нужно для уменьшения количество символов в счете. Иначе поле начинает
+								//очень быстро заполняться и выходить за пределы экрана
+								//Конструкция (whoGo+1)%2 позволяет получить в результате или 0 или 1, что нам и нужно
 								if (score3[whoGo] > score3[(whoGo+1)%2]) {
 									document.querySelector('#game3_score').innerHTML = 
 										`<p><b>"${name}" ${score3[whoGo]}</b> : ${score3[(whoGo+1)%2]} "${opponent}"</p>`;
@@ -1157,31 +1178,51 @@
 									document.querySelector('#game3_score').innerHTML = 
 										`<p>"${name}" 0 : 0 "${opponent}"</p>`;
 								}
+								//Если имя в событие равно имени опонента, то значит город ввел он. Начинает менять игровое поле.
 								if (body.name === opponent) {
+									//Предварительно очистим слой меток на карте. 
 									if (markersLayer3 !== undefined) {
 										markersLayer3.clearLayers();
 									}
+									//Добавим город в множество неповторений, чтобы город нельзя было ввести повторно
 									game3Set.add(body.city.city);
+									//Обновим массив последних координат
 									lastCoord3 = [body.city.latitude, body.city.longitude];
+									//Добавим метку в массив меток
 									markers3.push(L.marker([body.city.latitude, body.city.longitude]).bindPopup(body.city.city));
+									//Если меток стало 3, то убираем 1 в очереди. Так как нам всегда нужно иметь не больше 2 меток
 									if (markers3.length > 2) {
 										markers3.shift();
 									}
+									//Добавим метки на карту
 									markersLayer3 = L.featureGroup(markers3).addTo(map_game3);
+									//Позиционируем карту
 									map_game3.fitBounds(markersLayer3.getBounds());
+									//Отобразим игровую область
 									document.querySelector('#game3_area').style.display = 'block';
+									//Скроем сообщения об ожидании хода
 									document.querySelector('#game3_waiting').style.display = 'none';
+									//Получим последнюю букву имени
 									let lastletter2 = lastLetter(body.city.city);
+									//Для удобства первую букву города, который придется ввести игроку выведем в label поля ввода
+									//, а также в само поле ввода
 									document.querySelector('#game3_town').value = lastletter2.toUpperCase();
 									document.querySelector('label[for="game3_town"]').textContent = `Ваш город на ${lastletter2.toUpperCase()}:`;
 								}
 							});
+							//Если пришло сообщение об ошибке
 							socket.on('error', (body) => {
+								//Первый тип ошибки сможет присылаться до начала игры. Например, когда имя уже занято
 								if (body.type === 'pre_game') {
+									//Выведем ошибку в alert и вернем поле ввода имени на место
 									document.querySelector('#game3_start').style.display = 'inline';
 									document.querySelector('#game3_waiting').style.display = 'none';
 									alert(body.text);
+								//Второй тип ошибки сможет присылаться только во время самой игры. 
+								//Например нарушены правила игры
 								} else if (body.type === 'in_game') {
+									//Выведем в alert сообщение об ошибки и востановим игровое поле
+									//в состояние, как было до нарушения игры
 									document.querySelector('#game3_area').style.display = 'inline';
 									document.querySelector('#game3_waiting').style.display = 'none';
 									if (markersLayer3 !== undefined) {
@@ -1193,10 +1234,14 @@
 									alert(body.text);
 								}
 							});
+							//Сообщение о том, что один из игроков покинул игру
 							socket.on('exit', (data) => {
+								//Скроем игровую область, карту и счет.
 								document.querySelector('#game3_area').style.display = 'none';
 								document.querySelector('#game3_score').style.display = 'none';
 								document.querySelector('#game3_map').style.display = 'none';
+								//Выведем на экран последний счет игры с сообщением о том, что 
+								//игра закончена по причине выхода из неё второго игрока
 								document.querySelector('#game3_waiting').style.display = 'block';
 								document.querySelector('#game3_waiting').innerHTML = `
 									<p>К сожалению ${data.name} покинул игру. Игра окончена.</p>
@@ -1205,10 +1250,14 @@
 								document.querySelector('#game3_start').style.display = 'block';
 								game3Set.clear();
 							});
+							//Сообщение о том, что соединение с сервером пропало
 							socket.on("disconnect", (reason) => {
+								//Скроем игровую область, карту и счет.
 								document.querySelector('#game3_area').style.display = 'none';
 								document.querySelector('#game3_score').style.display = 'none';
 								document.querySelector('#game3_map').style.display = 'none';
+								//Выведем на экран последний счет игры с сообщением о том, что 
+								//игра закончена по причине выхода из неё второго игрока
 								document.querySelector('#game3_waiting').style.display = 'block';
 								document.querySelector('#game3_waiting').innerHTML = `
 									<p>К сожалению соединение с сервером потеряно. Игра окончена.</p>
@@ -1218,54 +1267,81 @@
 							});
 						});
 
+						//При нажатие на кнопку старт скрываем кнопку старт 
 						document.querySelector('#game3_start').style.display = 'none';
+						//Выводим блок с ожиданием игрока
 						document.querySelector('#game3_waiting').style.display = 'block';
+						//Имя игрока сразу сохраним себе
 						name = document.querySelector('#game3_name').value;
+						//Выводим текст Ожидайте игрока на экран
 						document.querySelector('#game3_waiting').innerHTML = `<p>Ожидайте игрока</p>`;
+						//отправим серверу сообщение о желание начать игру и имя игрока
 						socket.emit('start', name);
 					} else {
+						//Вслучае если сервер недоступен, то выводим это сообщение
 						alert('Соединение с сервером отсутствует, попробуйте начать игру позднее, перезагрузив страницу.');
 					}
 				};
+				//Программируем клик для отправки города на сервер
 				document.querySelector('#game3_set_result').onclick = async () => {
+					//Получаем город из поля ввода
 					let town = document.querySelector('#game3_town').value;
+					//Предваритально проверем, был ли этот город уже введен ранее
 					if (game3Set.has(town)) {
 						alert('Данный город уже был');
 					} else {
+						//Добавим его в множество городов, чтобы нельзя было его ввести повторно
 						game3Set.add(town);
+						//делаем запрос к игровому серверу о получении города на последнюю букву введенного города
 						let response = await fetch(`https://city.9pr.ru/city/${town}`);
+						//получаем текст сообщения
 						let text = await response.text();
+						//так как ответ приходит в формате JSON, предварительно отпарсим его
 						text = JSON.parse(text);
+						//Делаем проверку на ошибки, если поле с ошибкой не пусто, то оповещаем, если нет, идем дальше
 						if (text.error === undefined || text.error === null) {
+							//Если город существует, то идем по этому блоку
 							if (text.no === undefined) {
+								//Предварительно очищаем слой карты
 								if (markersLayer3 !== undefined) {
 									markersLayer3.clearLayers();
 								}
-								
+								//Если переменная последних координат непуста, то считаем расстояние и плюсуем к счету в игре
+								//При этом отбросим дробную часть. Оставляем только целые метры.
 								if (lastCoord3.length === 2) {
 									score3[whoGo] += Math.floor(ortodroma (text.latitude, text.longitude, lastCoord3[0], lastCoord3[1]));
 								}
+								//Обновим координаты последнего города
 								lastCoord3 = [text.latitude, text.longitude];
+								//Делаем копию меток, чтобы можно было потом откатить назад, вслучае нарушения правил
 								markersCopy = Object.values(markers3);
+								//Добавим метку в массив, и когда меток станет 3, то очистим самую старую из них
 								markers3.push(L.marker([text.latitude, text.longitude]).bindPopup(text.city));
 								if (markers3.length > 2) {
 									markers3.shift();
 								}
+								//Добавим метки на карту
 								markersLayer3 = L.featureGroup(markers3).addTo(map_game3);
+								//Позиционирование карты
 								map_game3.fitBounds(markersLayer3.getBounds());
+								//Отправим сообщение серверу о текущем счете, игроке, комнате и городе
 								socket.emit('sendCity', {
 									score: score3,
 									name,
 									room,
 									city: text,
 								});
+								//Скрываем игровое поле и выводим сообщение об ожидание хода следующим игроком
 								document.querySelector('#game3_button_start').style.display = 'none';
 								document.querySelector('#game3_area').style.display = 'none';
 								document.querySelector('#game3_waiting').innerHTML = 'Подождите, пока Ваш оппонент сделает ход.';
 								document.querySelector('#game3_waiting').style.display = 'block';
 							} else {
+								//Если введенного города не существует, то введем соответствующее сообщение
 								alert(text.no);
 							}
+						//Если произошла какая-то ошибка сервера, из-за которого нельзя продолжать играть или даже начинать
+						//выводим сообщение о том, что игра окончена
 						} else {
 							document.querySelector('#game3_town2').innerHTML = `
 								<p>Произошла ошибка, игра окончена.</p>
@@ -1291,19 +1367,33 @@
 				return Math.PI * degree / 180;
 			}
 
+			//Функция генерации тригонометрической таблицы
 			function trigonometry(values, functions) {
+				//Начинаем собирать таблицу путем добавления тегов
 				let table = '<table><thead>';
 					table += '<tr><td>Радианы</td>';
+					//В первой строке выводим в цикле значения углов 
 					for (let value of values) {
+						//С помощью катеха выводим эти значения красиво
 						table += `<td>${katex.renderToString(
 							Algebrite.simplify(value).toLatexString())}</td>`;
 					}
 					table += '</tr><thead><tbody>';
+					//В цикле обходим построчно тригонометрические функции
 					for (let func of functions) {
+						//В первую колонку с помощью катеха красиво выводим эти функции
 						table += `<tr><td>${func}${
 							katex.renderToString('\\alpha')}</td>`;
+							//В цикле обходим все колонки, подставляя аргумент функций
+							//И с помощью катеха выводим в красивом виде значение функции  
 							for (value of values) {
+								//С помощью Algebrite получим результат
 								let result = Algebrite.simplify(func+'('+value+')');
+								//После первого вывода выяснилось, что тангенс угла в 90 градусов
+								//отображался выражением tg pi/2.
+								//Методом научного тыка определили маркер отслеживания этих значений
+								//и создали дополнительное условие, при котором вместо tg pi/2 выводим
+								//бесконечность
 								if (result.cons.car !== null &&
 									result.cons.car.printname == 'tan') {
 										table += `<td>${katex.renderToString(
@@ -1317,14 +1407,19 @@
 							}
 					}
 				table += '</tbody></table>';
+				//Находим блок для вставки таблицы по его id и заполняем его нашей таблицей
 				document.querySelector('#table').innerHTML = table;
 			}
 
 			function lastLetter (town) {
 				let lastletter;
+				//Обходим слово посимвольно с конца.
 				for (let i = -1; i > -town.length; i--) {
+					//Забираем текущую букву в цикле
 					lastletter = town.substr(i, 1);
-					if (['ь', 'ъ', 'ы'].indexOf(lastletter) === -1) {
+					//Если там нет ы,ь,ъ то возвращаем эту букву, иначе переходим 
+					// к следующей букве с конца
+					if (['ь','ъ','ы'].indexOf(lastletter) === -1) {
 						break;
 					}
 				}
