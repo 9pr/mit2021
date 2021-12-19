@@ -586,6 +586,35 @@
 					<div class="map" id="game3_map"></div>
 				</section>
 
+				<!-- Блок для исходных кодов-->
+				<section class="center" data-markdown  data-separator-notes="^Note:">
+					<script type="text/template">
+						Исходный код программ
+						----
+
+						Note:
+
+					</script>
+				</section>
+
+				<!-- Вставляйте с помощью трех обратных апострофов  -->
+				<section class="center" data-markdown  data-separator-notes="^Note:">
+					<script type="text/template">
+						### Вычисление ортодромы
+						```
+						function ortodroma (latA, lonA, latB, lonB) {
+							return 6372795 * Math.acos (
+								Math.cos(deg2rad(latB)) * Math.cos(deg2rad(latA)) *
+								Math.cos(deg2rad(lonA) - deg2rad(lonB)) + 
+								Math.sin(deg2rad(latB)) * Math.sin(deg2rad(latA))
+							);
+						}
+						```
+						Note:
+
+					</script>
+				</section>
+
 				<section class="center" data-markdown  data-separator-notes="^Note:">
 					<script type="text/template">
 						Веселые картинки
